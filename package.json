@@ -1,0 +1,19 @@
+{
+  "name": "electron-webrtc",
+  "version": "0.0.0",
+  "description": "A node WebRTC client that works by spawning a hidden Electron process",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webrtc",
+    "electron"
+  ],
+  "author": "Matt Bell <mappum@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "electron-prebuilt": "^0.36.2",
+    "newline-json": "^0.1.1"
+  }
+}

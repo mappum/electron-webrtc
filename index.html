@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <script>
+      var ipc = require('ipc')
+      ipc.on('hello', function (message) {
+        ipc.send('data', message)
+      })
+    </script>
+  </body>
+</html>
