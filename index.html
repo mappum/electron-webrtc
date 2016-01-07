@@ -4,8 +4,14 @@
   <body>
     <script>
       var ipc = require('ipc')
-      ipc.on('hello', function (message) {
-        ipc.send('data', message)
+      ipc.on('eval', function (message) {
+        var err
+        try {
+          var res = eval(message.code)
+        } catch (e) {
+          err = e.message
+        }
+        ipc.send('data', { id: message.id, res: res, err: err })
       })
     </script>
   </body>
