@@ -4,7 +4,7 @@
   "description": "A node WebRTC client that works by spawning a hidden Electron process",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && tape test/*.js"
   },
   "keywords": [
     "webrtc",
@@ -13,7 +13,12 @@
   "author": "Matt Bell <mappum@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "electron-prebuilt": "^0.36.2",
-    "newline-json": "^0.1.1"
+    "electron-eval": "^0.0.3",
+    "hat": "0.0.3"
+  },
+  "devDependencies": {
+    "simple-peer": "^5.11.6",
+    "standard": "^5.4.1",
+    "tape": "^4.4.0"
   }
 }
