@@ -3,10 +3,6 @@
 var EventEmitter = require('events').EventEmitter
 
 module.exports = function (daemon) {
-  daemon.eval('window.dataChannels = {}', err => {
-    if (err) daemon.emit('error', err)
-  })
-
   return class RTCDataChannel extends EventEmitter {
     constructor (pcId, label, opts) {
       super()
@@ -21,6 +17,7 @@ module.exports = function (daemon) {
 
     _create (pcId, label, opts) {
       opts = opts || {}
+      this._pcId = pcId
       this.label = label
       this.ordered = null
       this.protocol = ''
@@ -35,9 +32,10 @@ module.exports = function (daemon) {
       this.reliable = typeof opts.reliable === 'boolean' ? opts.reliable : true
 
       daemon.eval(`
-        var dc = conns[${pcId}].createDataChannel(
+        var pc = conns[${JSON.stringify(pcId)}]
+        var dc = pc.createDataChannel(
           ${JSON.stringify(label)}, ${JSON.stringify(opts)})
-        dataChannels[dc.id] = dc
+        pc.dataChannels[dc.id] = dc
         dc.id
       `, (err, id) => {
         if (err) this.emit('error', err)
@@ -56,11 +54,11 @@ module.exports = function (daemon) {
     }
 
     _registerListeners (cb) {
-      daemon.on(`dc:${this.id}`, this.onMessage.bind(this))
-      daemon.eval(`
-        var dc = dataChannels[${this.id}]
+      daemon.on(`dc:${this._pcId}:${this.id}`, this.onMessage.bind(this))
+      this._eval(`
+        var id = 'dc:' + ${this._pcId} + ':' + dc.id
         dc.onopen = function () {
-          send('dc:' + dc.id, {
+          send(id, {
             type: 'open',
             state: {
               ordered: dc.ordered,
@@ -73,7 +71,7 @@ module.exports = function (daemon) {
           })
         }
         dc.onmessage = function (e) {
-          send('dc:' + dc.id, {
+          send(id, {
             type: 'message',
             event: {
               data: e.data,
@@ -82,24 +80,26 @@ module.exports = function (daemon) {
           })
         }
         dc.onbufferedamountlow = function () {
-          send('dc:' + dc.id, { type: 'bufferedamountlow' })
+          send(id, { type: 'bufferedamountlow' })
         }
         dc.onclose = function () {
-          delete dataChannels[dc.id]
-          send('dc:' + dc.id, { type: 'close' })
+          delete pc.dataChannels[dc.id]
+          send(id, { type: 'close' })
         }
         dc.onerror = function () {
-          send('dc:' + dc.id, { type: 'error' })
+          send(id, { type: 'error' })
         }
         if (dc.readyState === 'open') dc.onopen()
       `, cb || (err => {
-        if (err) return this.error('error', err)
+        if (err) return this.emit('error', err)
       }))
     }
 
     onMessage (message) {
       var handler = this['on' + message.type]
       var event = message.event || {}
+
+      // console.log('dc<<', this.id, message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 
@@ -118,24 +118,27 @@ module.exports = function (daemon) {
 
     close () {
       this.readyState = 'closing'
-      daemon.eval(`
-        var dc = dataChannels[${JSON.stringify(this.id)}]
-        if (dc) dc.close()
-      `, err => {
+      this._eval('if (dc) dc.close()', err => {
         if (err) this.emit('error', err)
       })
     }
 
     send (data) {
       // TODO: convert type of data
-      daemon.eval(`
-        var dc = dataChannels[${JSON.stringify(this.id)}]
+      this._eval(`
         dc.send(${JSON.stringify(data)})
         dc.bufferedAmount
       `, (err, bufferedAmount) => {
         if (err) return this.emit('error', err)
         this.bufferedAmount = bufferedAmount
       })
+    }
+
+    _eval (code, cb) {
+      return daemon.eval(`
+        var pc = conns[${JSON.stringify(this._pcId)}]
+        var dc = pc.dataChannels[${JSON.stringify(this.id)}]
+      ` + code, cb)
     }
   }
 }

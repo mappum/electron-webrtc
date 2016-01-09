@@ -17,10 +17,19 @@ test('create simple-peers', t => {
   p2.on('connect', t.end)
 })
 
-test('send data', t => {
-  var message = 'hello peer'
+test('send data (peer1 -> peer2)', t => {
+  var message = 'hello peer2'
   p1.send(message)
   p2.on('data', data => {
+    t.equals(data, message)
+    t.end()
+  })
+})
+
+test('send data (peer2 -> peer1)', t => {
+  var message = 'hi peer1'
+  p2.send(message)
+  p1.on('data', data => {
     t.equals(data, message)
     t.end()
   })

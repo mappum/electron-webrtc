@@ -26,13 +26,14 @@ module.exports = function (daemon) {
       daemon.eval(`
         (function () {
           var pc = conns[${this._id}] = new webkitRTCPeerConnection(${JSON.stringify(opts)})
-          var id = 'pc:'+${this._id}
+          pc.dataChannels = {}
+          var id = 'pc:' + ${this._id}
           pc.onaddstream = function (e) {
             // TODO: send MediaStream info
             send(id, { type: 'addstream' })
           }
           pc.ondatachannel = function (e) {
-            dataChannels[e.channel.id] = e.channel
+            pc.dataChannels[e.channel.id] = e.channel
             var channel = {}
             for (var key in e.channel) {
               if (typeof e.channel[key] === 'function' || e.channel[key] == null) continue
@@ -120,6 +121,7 @@ module.exports = function (daemon) {
           break
 
         case 'datachannel':
+          message.channel._pcId = this._id
           event.channel = new RTCDataChannel(message.channel)
           this._dataChannels.set(event.channel.id, event.channel)
           break
