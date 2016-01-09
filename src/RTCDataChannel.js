@@ -22,16 +22,16 @@ module.exports = function (daemon) {
     _create (pcId, label, opts) {
       opts = opts || {}
       this.label = label
-      this.ordered = null // TODO: update this
-      this.protocol = '' // TODO: update this
+      this.ordered = null
+      this.protocol = ''
       this.id = this.stream = null
       this.readyState = 'connecting'
       this.bufferedAmount = 0
-      this.bufferedAmountLowThreshold = 0 // TODO: update this
+      this.bufferedAmountLowThreshold = 0 // TODO: use a getter/setter
       this.binaryType = 'blob' // TODO: use a getter/setter
-      this.maxPacketLifeType = null // TODO: update this
-      this.maxRetransmits = null // TODO: update this
-      this.negotiated = false // TODO: update this
+      this.maxPacketLifeType = null
+      this.maxRetransmits = null
+      this.negotiated = false
       this.reliable = typeof opts.reliable === 'boolean' ? opts.reliable : true
 
       daemon.eval(`
@@ -60,13 +60,26 @@ module.exports = function (daemon) {
       daemon.eval(`
         var dc = dataChannels[${this.id}]
         dc.onopen = function () {
-          send('dc:' + dc.id, { type: 'open' })
+          send('dc:' + dc.id, {
+            type: 'open',
+            state: {
+              ordered: dc.ordered,
+              protocol: dc.protocol,
+              maxPacketLifeType: dc.maxPacketLifeType,
+              maxRetransmits: dc.maxRetransmits,
+              negotiated: dc.negotiated,
+              reliable: dc.reliable
+            }
+          })
         }
         dc.onmessage = function (e) {
-          send('dc:' + dc.id, { type: 'message', event: {
-            data: e.data,
-            origin: e.origin
-          }})
+          send('dc:' + dc.id, {
+            type: 'message',
+            event: {
+              data: e.data,
+              origin: e.origin
+            }
+          })
         }
         dc.onbufferedamountlow = function () {
           send('dc:' + dc.id, { type: 'bufferedamountlow' })
@@ -78,20 +91,15 @@ module.exports = function (daemon) {
         dc.onerror = function () {
           send('dc:' + dc.id, { type: 'error' })
         }
-        dc.readyState
-      `, cb || ((err, readyState) => {
+        if (dc.readyState === 'open') dc.onopen()
+      `, cb || (err => {
         if (err) return this.error('error', err)
-        if (readyState === 'open') {
-          this.onMessage({ type: 'open' })
-        }
       }))
     }
 
     onMessage (message) {
       var handler = this['on' + message.type]
       var event = message.event || {}
-
-      console.log('dc<<', message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 
