@@ -1,7 +1,7 @@
 {
   "name": "electron-webrtc",
   "version": "0.0.0",
-  "description": "A node WebRTC client that works by spawning a hidden Electron process",
+  "description": "Use WebRTC in Node.js via a hidden Electron process",
   "main": "index.js",
   "scripts": {
     "test": "standard && tape test/*.js"
@@ -13,8 +13,8 @@
   "author": "Matt Bell <mappum@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "electron-eval": "^0.0.3",
-    "hat": "0.0.3"
+    "electron-eval": "^0.1.0",
+    "hat": "^0.0.3"
   },
   "devDependencies": {
     "simple-peer": "^5.11.6",
