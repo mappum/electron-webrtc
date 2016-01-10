@@ -192,6 +192,36 @@ module.exports = function (daemon) {
       this._callRemote('close')
     }
 
+    getStats (cb) {
+      this._callRemote('getStats', `
+        function (res) {
+          res = res.result()
+          var output = new Array(res.length)
+          res.forEach(function (res) {
+            var item = {
+              id: res.id,
+              timestamp: res.timestamp,
+              type: res.type,
+              stats: {}
+            }
+            res.names().forEach(function (name) {
+              item.stats[name] = res.stat(name)
+            })
+            output.push(item)
+          })
+          onSuccess(output)
+        }
+      `, res => {
+        for (let item of res) {
+          let stats = item.stats
+          delete item.stats
+          item.names = () => Object.keys(stats)
+          item.stat = name => stats[name]
+        }
+        cb({ result: () => res })
+      })
+    }
+
     _callRemote (name, args, cb, errCb) {
       var resolve
       var reject
