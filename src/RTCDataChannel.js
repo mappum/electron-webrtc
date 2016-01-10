@@ -24,8 +24,8 @@ module.exports = function (daemon) {
       this.id = this.stream = null
       this.readyState = 'connecting'
       this.bufferedAmount = 0
-      this.bufferedAmountLowThreshold = 0 // TODO: use a getter/setter
-      this.binaryType = 'blob' // TODO: use a getter/setter
+      this._bufferedAmountLowThreshold = 0
+      this._binaryType = 'blob'
       this.maxPacketLifeType = null
       this.maxRetransmits = null
       this.negotiated = false
@@ -138,7 +138,32 @@ module.exports = function (daemon) {
       return daemon.eval(`
         var pc = conns[${JSON.stringify(this._pcId)}]
         var dc = pc.dataChannels[${JSON.stringify(this.id)}]
-      ` + code, cb)
+      ` + code, cb || (err => {
+        if (err) this.emit('error', err)
+      }))
+    }
+
+    _setProp (name, value) {
+      if (this.id == null) {
+        return this.once('init', () => this._setProp(name, value))
+      }
+      return this._eval(`dc["${name}"] = ${JSON.stringify(value)}`)
+    }
+
+    get bufferedAmountLowThreshold () {
+      return this._bufferedAmountLowThreshold
+    }
+    set bufferedAmountLowThreshold (value) {
+      this._bufferedAmountLowThreshold = value
+      this._setProp('bufferedAmountLowThreshold', value)
+    }
+
+    get binaryType () {
+      return this._binaryType
+    }
+    set binaryType (value) {
+      this._binaryType = value
+      this._setProp('binaryType', value)
     }
   }
 }
