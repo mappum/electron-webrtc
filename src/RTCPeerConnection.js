@@ -45,15 +45,17 @@ module.exports = function (daemon) {
             })
           }
           pc.onicecandidate = function (e) {
+            var event = {}
+            if (e.candidate) {
+              event.candidate = {
+                candidate: e.candidate.candidate,
+                sdpMid: e.candidate.sdpMid,
+                sdpMLineIndex: e.candidate.sdpMLineIndex
+              }
+            }
             send(id, {
               type: 'icecandidate',
-              event: {
-                candidate: {
-                  candidate: e.candidate.candidate,
-                  sdpMid: e.candidate.sdpMid,
-                  sdpMLineIndex: e.candidate.sdpMLineIndex
-                }
-              }
+              event: event
             })
           }
           pc.oniceconnectionstatechange = function (e) {
@@ -109,7 +111,7 @@ module.exports = function (daemon) {
       var handler = this['on' + message.type]
       var event = message.event || {}
 
-      // console.log('<<', message.type, message, !!handler)
+      console.log('<<', message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 
