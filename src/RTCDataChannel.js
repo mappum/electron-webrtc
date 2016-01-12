@@ -3,6 +3,26 @@
 var EventEmitter = require('events').EventEmitter
 
 module.exports = function (daemon) {
+  daemon.eval(`
+    window.arrayBufferToBase64 = function (buffer) {
+      var binary = ''
+      var bytes = new Uint8Array(buffer)
+      for (var i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i])
+      }
+      return window.btoa(binary)
+    }
+
+    window.base64ToArrayBuffer = function (base64) {
+      var binary = window.atob(base64)
+      var bytes = new Uint8Array(binary.length)
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i)
+      }
+      return bytes.buffer
+    }
+  `)
+
   return class RTCDataChannel extends EventEmitter {
     constructor (pcId, label, opts) {
       super()
@@ -74,9 +94,10 @@ module.exports = function (daemon) {
           send(id, {
             type: 'message',
             event: {
-              data: e.data,
+              data: e.data instanceof ArrayBuffer ? arrayBufferToBase64(e.data) : e.data,
               origin: e.origin
-            }
+            },
+            dataType: e.data instanceof ArrayBuffer ? 'binary' : 'string'
           })
         }
         dc.onbufferedamountlow = function () {
@@ -108,6 +129,13 @@ module.exports = function (daemon) {
           this.readyState = 'open'
           break
 
+        case 'message':
+          if (message.dataType === 'binary') {
+            var b = new Buffer(event.data, 'base64')
+            event.data = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)
+          }
+          break
+
         case 'close':
           this.readyState = 'closed'
           break
@@ -124,9 +152,15 @@ module.exports = function (daemon) {
     }
 
     send (data) {
-      // TODO: convert type of data
+      var convert = ''
+      if (data instanceof ArrayBuffer) {
+        data = toBuffer(data).toString('base64')
+        convert = 'data = base64ToArrayBuffer(data)'
+      }
       this._eval(`
-        dc.send(${JSON.stringify(data)})
+        var data = ${JSON.stringify(data)}
+        ${convert}
+        dc.send(data)
         dc.bufferedAmount
       `, (err, bufferedAmount) => {
         if (err) return this.emit('error', err)
@@ -166,4 +200,13 @@ module.exports = function (daemon) {
       this._setProp('binaryType', value)
     }
   }
+}
+
+function toBuffer (ab) {
+  var buffer = new Buffer(ab.byteLength)
+  var view = new Uint8Array(ab)
+  for (var i = 0; i < buffer.length; ++i) {
+    buffer[i] = view[i]
+  }
+  return buffer
 }
