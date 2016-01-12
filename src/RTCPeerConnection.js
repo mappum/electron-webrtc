@@ -17,7 +17,7 @@ module.exports = function (daemon) {
       this._id = (i++).toString(36)
       this._dataChannels = new Map()
       this.iceConnectionState = 'new'
-      this.iceGatheringState = 'new' // TODO: update this
+      this.iceGatheringState = 'new'
       this.localDescription = null
       this.peerIdentity = null // TODO: update this
       this.remoteDescription = null
@@ -55,7 +55,8 @@ module.exports = function (daemon) {
             }
             send(id, {
               type: 'icecandidate',
-              event: event
+              event: event,
+              iceGatheringState: pc.iceGatheringState
             })
           }
           pc.oniceconnectionstatechange = function (e) {
@@ -111,7 +112,7 @@ module.exports = function (daemon) {
       var handler = this['on' + message.type]
       var event = message.event || {}
 
-      console.log('<<', message.type, message, !!handler)
+      // console.log(this._id + '<<', message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 
@@ -126,6 +127,10 @@ module.exports = function (daemon) {
           message.channel._pcId = this._id
           event.channel = new RTCDataChannel(message.channel)
           this._dataChannels.set(event.channel.id, event.channel)
+          break
+
+        case 'icecandidate':
+          this.iceGatheringState = message.iceGatheringState
           break
 
         case 'iceconnectionstatechange':
