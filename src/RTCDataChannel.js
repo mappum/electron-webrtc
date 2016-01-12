@@ -120,7 +120,7 @@ module.exports = function (daemon) {
       var handler = this['on' + message.type]
       var event = message.event || {}
 
-      // console.log('dc<<', this.id, message.type, message, !!handler)
+      console.log('dc<<', this.id, message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 
@@ -154,7 +154,10 @@ module.exports = function (daemon) {
     send (data) {
       var convert = ''
       if (data instanceof ArrayBuffer) {
-        data = toBuffer(data).toString('base64')
+        data = toBuffer(data)
+      }
+      if (data instanceof Buffer) {
+        data = data.toString('base64')
         convert = 'data = base64ToArrayBuffer(data)'
       }
       this._eval(`
