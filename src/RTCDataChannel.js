@@ -76,7 +76,7 @@ module.exports = function (daemon) {
     _registerListeners (cb) {
       daemon.on(`dc:${this._pcId}:${this.id}`, this.onMessage.bind(this))
       this._eval(`
-        var id = 'dc:' + ${this._pcId} + ':' + dc.id
+        var id = 'dc:' + ${JSON.stringify(this._pcId)} + ':' + dc.id
         dc.onopen = function () {
           send(id, {
             type: 'open',

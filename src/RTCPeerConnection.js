@@ -25,9 +25,9 @@ module.exports = function (daemon) {
       daemon.on(`pc:${this._id}`, this.onMessage.bind(this))
       daemon.eval(`
         (function () {
-          var pc = conns[${this._id}] = new webkitRTCPeerConnection(${JSON.stringify(opts)})
+          var pc = conns[${JSON.stringify(this._id)}] = new webkitRTCPeerConnection(${JSON.stringify(opts)})
           pc.dataChannels = {}
-          var id = 'pc:' + ${this._id}
+          var id = 'pc:' + ${JSON.stringify(this._id)}
           pc.onaddstream = function (e) {
             // TODO: send MediaStream info
             send(id, { type: 'addstream' })
