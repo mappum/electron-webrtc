@@ -1,6 +1,7 @@
 'use strict'
 
 var EventEmitter = require('events').EventEmitter
+var debug = require('debug')('RTCDC')
 
 module.exports = function (daemon) {
   daemon.eval(`
@@ -120,7 +121,7 @@ module.exports = function (daemon) {
       var handler = this['on' + message.type]
       var event = message.event || {}
 
-      console.log('dc<<', this.id, message.type, message, !!handler)
+      debug('<<', this.id, message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 

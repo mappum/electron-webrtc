@@ -2,6 +2,7 @@
 
 var EventEmitter = require('events').EventEmitter
 var hat = require('hat')
+var debug = require('debug')('RTCPC')
 
 module.exports = function (daemon) {
   var RTCDataChannel = require('./RTCDataChannel.js')(daemon)
@@ -112,7 +113,7 @@ module.exports = function (daemon) {
       var handler = this['on' + message.type]
       var event = message.event || {}
 
-      // console.log(this._id + '<<', message.type, message, !!handler)
+      debug(this._id + '<<', message.type, message, !!handler)
 
       // TODO: create classes for different event types?
 
