@@ -203,8 +203,7 @@ module.exports = function (daemon) {
       this._callRemote('getStats', `
         function (res) {
           res = res.result()
-          var output = new Array(res.length)
-          res.forEach(function (res) {
+          var output = res.map(function (res) {
             var item = {
               id: res.id,
               timestamp: res.timestamp,
@@ -214,7 +213,7 @@ module.exports = function (daemon) {
             res.names().forEach(function (name) {
               item.stats[name] = res.stat(name)
             })
-            output.push(item)
+            return item
           })
           onSuccess(output)
         }
