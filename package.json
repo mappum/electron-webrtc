@@ -4,7 +4,7 @@
   "description": "Use WebRTC in Node.js via a hidden Electron process",
   "main": "index.js",
   "scripts": {
-    "test": "standard && tape test/*.js"
+    "test": "standard && tap test/*.js --cov"
   },
   "keywords": [
     "webrtc",
@@ -20,6 +20,6 @@
     "simple-peer": "^5.11.6",
     "standard": "^5.4.1",
     "string-to-stream": "^1.0.1",
-    "tape": "^4.4.0"
+    "tap": "^5.1.1"
   }
 }
