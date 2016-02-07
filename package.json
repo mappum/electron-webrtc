@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "debug": "^2.2.0",
-    "electron-eval": "^0.2.0",
+    "electron-eval": "^0.2.1",
     "hat": "^0.0.3"
   },
   "devDependencies": {
