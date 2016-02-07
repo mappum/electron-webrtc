@@ -54,6 +54,23 @@ Closes the Electron process and releases its resources. You may not need to do t
 
 A handle to the [`electron-eval`](https://github.com/mappum/electron-eval) daemon that this module uses to talk to the Electron process.
 
+### Running on a headless server
+
+Chromium normally won't run on a headless server since it expects a screen that it can render to. So to work around this, we can use `Xvfb`, a utility that creates a framebuffer that Chromium can use as a virtual screen.
+
+First, install `xvfb`:
+```sh
+sudo apt-get install xvfb
+```
+
+Now start it up:
+```sh
+export DISPLAY='0:99'
+Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+```
+
+Now you may run your WebRTC code with `electron-webrtc` :)
+
 ## Related Modules
 
 - [`node-webrtc`](https://github.com/js-platform/node-webrtc)
