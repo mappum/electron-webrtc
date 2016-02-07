@@ -3,7 +3,7 @@ var Peer = require('simple-peer')
 var str = require('string-to-stream')
 
 var wrtc
-test('create daemon', t => {
+test('create daemon', (t) => {
   wrtc = require('..')()
   wrtc.electronDaemon.once('ready', t.end)
 })
@@ -378,7 +378,7 @@ test('disable trickle (only receiver)', function (t) {
 
 // cleanup
 
-test('cleanup electron-eval daemon', t => {
+test('cleanup electron-eval daemon', (t) => {
   wrtc.electronDaemon.close()
   t.end()
 })

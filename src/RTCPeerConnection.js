@@ -8,7 +8,7 @@ module.exports = function (daemon) {
   var RTCDataChannel = require('./RTCDataChannel.js')(daemon)
 
   var i = 0
-  daemon.eval('window.conns = {}', err => {
+  daemon.eval('window.conns = {}', (err) => {
     if (err) daemon.emit('error', err)
   })
 
@@ -104,7 +104,7 @@ module.exports = function (daemon) {
             })
           }
         })()
-      `, err => {
+      `, (err) => {
         if (err) this.emit('error', err)
       })
     }
@@ -218,32 +218,32 @@ module.exports = function (daemon) {
           })
           onSuccess(output)
         }
-      `, res => {
+      `, (res) => {
         for (let item of res) {
           let stats = item.stats
           delete item.stats
           item.names = () => Object.keys(stats)
-          item.stat = name => stats[name]
+          item.stat = (name) => stats[name]
         }
         cb({ result: () => res })
       })
     }
 
     _callRemote (name, args, cb, errCb) {
-      var resolve
-      var reject
-      var promise = new Promise((res, rej) => {
-        resolve = res
-        reject = rej
+      var _resolve
+      var _reject
+      var promise = new Promise((resolve, reject) => {
+        _resolve = resolve
+        _reject = reject
       })
       var reqId = hat()
-      daemon.once(reqId, res => {
+      daemon.once(reqId, (res) => {
         if (res.err && errCb) {
           errCb(res.err)
-          reject(res.err)
+          _reject(res.err)
         } else if (!res.err && cb) {
           cb(res.res)
-          resolve(res.res)
+          _resolve(res.res)
         }
       })
       daemon.eval(`
@@ -259,7 +259,7 @@ module.exports = function (daemon) {
           }
           pc.${name}(${args || ''})
         })()
-      `, err => {
+      `, (err) => {
         if (err) this.emit('error', err)
       })
       return promise

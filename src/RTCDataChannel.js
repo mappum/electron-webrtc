@@ -112,7 +112,7 @@ module.exports = function (daemon) {
           send(id, { type: 'error' })
         }
         if (dc.readyState === 'open') dc.onopen()
-      `, cb || (err => {
+      `, cb || ((err) => {
         if (err) return this.emit('error', err)
       }))
     }
@@ -147,7 +147,7 @@ module.exports = function (daemon) {
 
     close () {
       this.readyState = 'closing'
-      this._eval('if (dc) dc.close()', err => {
+      this._eval('if (dc) dc.close()', (err) => {
         if (err) this.emit('error', err)
       })
     }
@@ -176,7 +176,7 @@ module.exports = function (daemon) {
       return daemon.eval(`
         var pc = conns[${JSON.stringify(this._pcId)}]
         var dc = pc.dataChannels[${JSON.stringify(this.id)}]
-      ` + code, cb || (err => {
+      ` + code, cb || ((err) => {
         if (err) this.emit('error', err)
       }))
     }
