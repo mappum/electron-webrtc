@@ -154,7 +154,7 @@ module.exports = function (daemon) {
 
     send (data) {
       var convert = ''
-      if (data instanceof ArrayBuffer) {
+      if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
         data = toBuffer(data)
       }
       if (data instanceof Buffer) {
