@@ -20,7 +20,7 @@
     "hat": "^0.0.3"
   },
   "devDependencies": {
-    "simple-peer": "^5.11.6",
+    "simple-peer": "^6.0.0",
     "standard": "^6.0.4",
     "string-to-stream": "^1.0.1",
     "tap": "^5.1.1"
