@@ -51,11 +51,7 @@ module.exports = function (daemon, wrtc) {
       this.maxRetransmits = null
       this.negotiated = false
       this.reliable = typeof opts.reliable === 'boolean' ? opts.reliable : true
-
-      this.on('error', (err) => {
-        if (/daemon/i.test(err.message)) wrtc.emit('error', err, this)
-      })
-
+      this.on('error', (err) => wrtc.emit('error', err, this))
       daemon.eval(`
         var pc = conns[${JSON.stringify(pcId)}]
         var dc = pc.createDataChannel(
