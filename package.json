@@ -4,7 +4,7 @@
   "description": "Use WebRTC in Node.js via a hidden Electron process",
   "main": "index.js",
   "scripts": {
-    "test": "standard && tap test/*.js --cov",
+    "test": "standard && tap test/*.js -Rspec --cov",
     "test-tap": "tap test/*.js -Rtap",
     "test-lcov": "mkdir -p coverage && tap test/*.js -Rsilent --coverage-report=text-lcov > coverage/lcov.info"
   },
