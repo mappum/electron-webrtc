@@ -12,7 +12,7 @@ test('create RTCPeerConnection after close', (t) => {
     t.end()
   })
 
-  wrtc.electronDaemon.close()
+  wrtc.close()
   var pc = new wrtc.RTCPeerConnection()
   pc
 })

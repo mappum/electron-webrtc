@@ -375,6 +375,6 @@ test('disable trickle (only receiver)', function (t) {
 // cleanup
 
 test('cleanup electron-eval daemon', (t) => {
-  wrtc.electronDaemon.close()
+  wrtc.close()
   t.end()
 })

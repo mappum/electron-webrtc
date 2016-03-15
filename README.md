@@ -26,6 +26,9 @@ This module is compatible with [`simple-peer`](https://github.com/feross/simple-
 // call exported function to create Electron process
 var wrtc = require('electron-webrtc')()
 
+// handle errors that may occur when trying to communicate with Electron
+wrtc.on('error', function (err) { console.log(err) })
+
 // uses the same API as the `wrtc` package
 var pc = new wrtc.RTCPeerConnection(config)
 
@@ -49,7 +52,9 @@ Calling the function exported by this module will create a new hidden Electron p
 
 The object returned by this function has the same API as the [`node-webrtc`](https://github.com/js-platform/node-webrtc) package.
 
-#### `wrtc.electronDaemon.close()`
+Any errors that occur when communicating with the Electron daemon will be emitted by the `wrtc` object (`wrtc.on('error', ...)`).
+
+#### `wrtc.close()`
 
 Closes the Electron process and releases its resources. You may not need to do this since the Electron process will close automatically after the Node process terminates.
 
