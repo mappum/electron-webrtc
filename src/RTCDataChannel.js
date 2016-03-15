@@ -3,7 +3,7 @@
 var EventEmitter = require('events').EventEmitter
 var debug = require('debug')('RTCDC')
 
-module.exports = function (daemon) {
+module.exports = function (daemon, wrtc) {
   daemon.eval(`
     window.arrayBufferToBase64 = function (buffer) {
       var binary = ''
@@ -51,7 +51,7 @@ module.exports = function (daemon) {
       this.maxRetransmits = null
       this.negotiated = false
       this.reliable = typeof opts.reliable === 'boolean' ? opts.reliable : true
-
+      this.on('error', (err) => wrtc.emit('error', err, this))
       daemon.eval(`
         var pc = conns[${JSON.stringify(pcId)}]
         var dc = pc.createDataChannel(
@@ -59,7 +59,7 @@ module.exports = function (daemon) {
         pc.dataChannels[dc.id] = dc
         dc.id
       `, (err, id) => {
-        if (err) this.emit('error', err)
+        if (err) return this.emit('error', err)
         this.id = this.stream = id
         this._registerListeners()
         this.emit('init')
@@ -113,7 +113,7 @@ module.exports = function (daemon) {
         }
         if (dc.readyState === 'open') dc.onopen()
       `, cb || ((err) => {
-        if (err) return this.emit('error', err)
+        if (err) this.emit('error', err)
       }))
     }
 

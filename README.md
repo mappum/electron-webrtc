@@ -34,6 +34,11 @@ var peer = new SimplePeer({
   initiator: true,
   wrtc: wrtc
 })
+
+// listen for errors
+wrtc.on('error', function (err, source) {
+  console.error(err)
+})
 ```
 
 ### Methods
@@ -53,6 +58,11 @@ Closes the Electron process and releases its resources. You may not need to do t
 #### `wrtc.electronDaemon`
 
 A handle to the [`electron-eval`](https://github.com/mappum/electron-eval) daemon that this module uses to talk to the Electron process.
+
+### Events
+
+#### - `error`
+Emitted by `RTCPeerConnection` or `RTCDataChannel` when `daemon.eval()` evaluates code that throws an internal error.
 
 ### Running on a headless server
 

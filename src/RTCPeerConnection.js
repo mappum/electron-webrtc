@@ -1,20 +1,18 @@
 'use strict'
 
-var EventEmitter = require('events').EventEmitter
 var hat = require('hat')
 var debug = require('debug')('RTCPC')
 
-module.exports = function (daemon) {
-  var RTCDataChannel = require('./RTCDataChannel.js')(daemon)
+module.exports = function (daemon, wrtc) {
+  var RTCDataChannel = require('./RTCDataChannel.js')(daemon, wrtc)
 
   var i = 0
   daemon.eval('window.conns = {}', (err) => {
-    if (err) daemon.emit('error', err)
+    if (err) wrtc.emit('error', err)
   })
 
-  return class RTCPeerConnection extends EventEmitter {
+  return class RTCPeerConnection {
     constructor (opts) {
-      super()
       this._id = (i++).toString(36)
       this._dataChannels = new Map()
       this.iceConnectionState = 'new'
@@ -105,7 +103,7 @@ module.exports = function (daemon) {
           }
         })()
       `, (err) => {
-        if (err) this.emit('error', err)
+        if (err) wrtc.emit('error', err, this)
       })
     }
 
@@ -260,7 +258,7 @@ module.exports = function (daemon) {
           pc.${name}(${args || ''})
         })()
       `, (err) => {
-        if (err) this.emit('error', err)
+        if (err) wrtc.emit('error', err, this)
       })
       return promise
     }
