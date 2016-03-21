@@ -162,9 +162,11 @@ module.exports = function (daemon, wrtc) {
         convert = 'data = base64ToArrayBuffer(data)'
       }
       this._eval(`
-        var data = ${JSON.stringify(data)}
-        ${convert}
-        dc.send(data)
+        if (dc.readyState === 'open') {
+          var data = ${JSON.stringify(data)}
+          ${convert}
+          dc.send(data)
+        }
         dc.bufferedAmount
       `, (err, bufferedAmount) => {
         if (err) return this.emit('error', err)
