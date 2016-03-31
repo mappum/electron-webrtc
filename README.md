@@ -46,9 +46,11 @@ wrtc.on('error', function (err, source) {
 
 ### Methods
 
-#### `var wrtc = require('electron-webrtc')()`
+#### `var wrtc = require('electron-webrtc')([opts])`
 
 Calling the function exported by this module will create a new hidden Electron process. It is recommended to only create one, since Electron uses a lot of resources.
+
+An optional `opts` object may contain specific options (including headless mode). See [`electron-eval`](https://github.com/nlocnila/electron-eval/blob/master/README.md#var-daemon--electronevalopts)
 
 The object returned by this function has the same API as the [`node-webrtc`](https://github.com/js-platform/node-webrtc) package.
 
@@ -78,10 +80,14 @@ First, install `xvfb`:
 sudo apt-get install xvfb
 ```
 
-Now start it up:
+Create the `HEADLESS` env variable:
 ```sh
-export DISPLAY='0:99'
-Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+export HEADLESS=true
+```
+
+Or if you want to do it programmatically, initialize a new instance and pass in `headless` as a key as demonstrated: 
+```js
+var wrtc = require('electron-webrtc')({ headless: true })
 ```
 
 Now you may run your WebRTC code with `electron-webrtc` :)
