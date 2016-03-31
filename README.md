@@ -50,7 +50,7 @@ wrtc.on('error', function (err, source) {
 
 Calling the function exported by this module will create a new hidden Electron process. It is recommended to only create one, since Electron uses a lot of resources.
 
-An optional `opts` object may contain specific options (including headless mode). See [`electron-eval`](https://github.com/nlocnila/electron-eval/blob/master/README.md#var-daemon--electronevalopts)
+An optional `opts` object may contain specific options (including headless mode). See [`electron-eval`](https://github.com/mappum/electron-eval#var-daemon--electronevalopts)
 
 The object returned by this function has the same API as the [`node-webrtc`](https://github.com/js-platform/node-webrtc) package.
 
