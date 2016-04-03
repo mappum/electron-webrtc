@@ -24,5 +24,16 @@
     "standard": "^6.0.4",
     "string-to-stream": "^1.0.1",
     "tap": "^5.1.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mappum/electron-webrtc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mappum/electron-webrtc/issues"
+  },
+  "homepage": "https://github.com/mappum/electron-webrtc#readme"
 }
