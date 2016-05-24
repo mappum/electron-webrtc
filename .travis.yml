@@ -1,11 +1,10 @@
 os:
   - linux
   - osx
-
 env:
-  - NODE_VERSION=4
-  - NODE_VERSION=5
-
+  - NODE=6
+  - NODE=5
+  - NODE=4
 addons:
   apt:
     packages:
@@ -25,20 +24,16 @@ addons:
       - gcc-multilib
       - g++-multilib
       - xvfb
-
 install:
-  - export HEADLESS=true
   - rm -rf ~/.nvm
   - git clone https://github.com/creationix/nvm.git ~/.nvm
   - source ~/.nvm/nvm.sh
-  - nvm install $NODE_VERSION
+  - nvm install $NODE
   - nvm --version
   - node --version
   - npm --version
   - npm install
-
 script:
   - npm test
-
 notifications:
   email: false
