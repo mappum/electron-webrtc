@@ -1,6 +1,6 @@
 {
   "name": "electron-webrtc",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Use WebRTC in Node.js via a hidden Electron process",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,9 @@
     "test-tap": "tap test/*.js -Rtap",
     "test-lcov": "mkdir -p coverage && tap test/*.js -Rsilent --coverage-report=text-lcov > coverage/lcov.info"
   },
-  "engines" : { "node" : ">=4" },
+  "engines": {
+    "node": ">=4"
+  },
   "keywords": [
     "webrtc",
     "electron"
