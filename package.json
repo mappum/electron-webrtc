@@ -8,6 +8,7 @@
     "test-tap": "tap test/*.js -Rtap",
     "test-lcov": "mkdir -p coverage && tap test/*.js -Rsilent --coverage-report=text-lcov > coverage/lcov.info"
   },
+  "engines" : { "node" : ">=4" },
   "keywords": [
     "webrtc",
     "electron"
