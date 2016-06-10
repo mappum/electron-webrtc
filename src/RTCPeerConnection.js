@@ -195,7 +195,9 @@ module.exports = function (daemon, wrtc) {
     }
 
     close () {
-      this._callRemote('close')
+      this._eval(`
+        if (pc.signalingState !== 'closed') pc.close()
+      `)
     }
 
     getStats (cb) {
@@ -227,7 +229,7 @@ module.exports = function (daemon, wrtc) {
       })
     }
 
-    _callRemote (name, args, cb, errCb) {
+    _eval (code, cb, errCb) {
       var _resolve
       var _reject
       var promise = new Promise((resolve, reject) => {
@@ -255,12 +257,16 @@ module.exports = function (daemon, wrtc) {
           var onFailure = function (err) {
             send(reqId, { err: err })
           }
-          pc.${name}(${args || ''})
+          ${code}
         })()
       `, (err) => {
         if (err) wrtc.emit('error', err, this)
       })
       return promise
+    }
+
+    _callRemote (name, args, cb, errCb) {
+      return this._eval(`pc.${name}(${args || ''})`, cb, errCb)
     }
   }
 }
