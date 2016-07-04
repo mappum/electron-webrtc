@@ -38,6 +38,11 @@ module.exports = function (daemon, wrtc) {
               if (typeof e.channel[key] === 'function' || e.channel[key] == null) continue
               channel[key] = e.channel[key]
             }
+            // Queues messages that have been recieved before the message listener has been added
+            e.channel.msgQueue = []
+            e.channel.onmessage = function (eMsg) {
+              e.channel.msgQueue.push(eMsg)
+            }
             send(id, {
               type: 'datachannel',
               channel: channel
