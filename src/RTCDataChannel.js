@@ -57,6 +57,11 @@ module.exports = function (daemon, wrtc) {
         var dc = pc.createDataChannel(
           ${JSON.stringify(label)}, ${JSON.stringify(opts)})
         pc.dataChannels[dc.id] = dc
+        // Queues messages that have been recieved before the message listener has been added
+        dc.msgQueue = []
+        dc.onmessage = function (eMsg) {
+          dc.msgQueue.push(eMsg)
+        }
         dc.id
       `, (err, id) => {
         if (err) return this.emit('error', err)
@@ -112,6 +117,10 @@ module.exports = function (daemon, wrtc) {
           send(id, { type: 'error' })
         }
         if (dc.readyState === 'open') dc.onopen()
+        for (var i = 0; i < dc.msgQueue.length; i++) {
+          dc.onmessage(dc.msgQueue[i])
+        }
+        dc.msgQueue = null
       `, cb || ((err) => {
         if (err) this.emit('error', err)
       }))
