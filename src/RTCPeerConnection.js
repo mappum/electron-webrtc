@@ -15,6 +15,8 @@ module.exports = function (daemon, wrtc) {
     constructor (opts) {
       this._id = (i++).toString(36)
       this._dataChannels = new Map()
+      this._offer = null
+      this._answer = null
       this.iceConnectionState = 'new'
       this.iceGatheringState = 'new'
       this.localDescription = null
@@ -57,10 +59,29 @@ module.exports = function (daemon, wrtc) {
                 sdpMLineIndex: e.candidate.sdpMLineIndex
               }
             }
-            send(id, {
-              type: 'icecandidate',
-              event: event,
-              iceGatheringState: pc.iceGatheringState
+            var offer, answer
+            function sendEvent () {
+              send(id, {
+                type: 'icecandidate',
+                event: event,
+                iceGatheringState: pc.iceGatheringState,
+                offer: offer ? offer.toJSON() : null,
+                answer: answer ? answer.toJSON() : null
+              })
+            }
+            pc.createOffer(function (o) {
+              offer = o
+              if (answer != null) sendEvent()
+            }, function () {
+              offer = false
+              if (answer != null) sendEvent()
+            })
+            pc.createAnswer(function (a) {
+              answer = a
+              if (offer != null) sendEvent()
+            }, function () {
+              answer = false
+              if (offer != null) sendEvent()
             })
           }
           pc.oniceconnectionstatechange = function (e) {
@@ -135,6 +156,12 @@ module.exports = function (daemon, wrtc) {
 
         case 'icecandidate':
           this.iceGatheringState = message.iceGatheringState
+          if (message.offer) {
+            this._offer = Object.assign(this._offer || {}, message.offer)
+          }
+          if (message.answer) {
+            this._answer = Object.assign(this._answer || {}, message.answer)
+          }
           break
 
         case 'iceconnectionstatechange':
@@ -161,18 +188,26 @@ module.exports = function (daemon, wrtc) {
     }
 
     createOffer (cb, errCb, options) {
+      if (this._offer) return cb(this._offer)
       return this._callRemote(
         'createOffer',
         `onSuccess, onFailure, ${JSON.stringify(options)}`,
-        cb, errCb
+        (offer) => {
+          this._offer = offer
+          cb(offer)
+        }, errCb
       )
     }
 
     createAnswer (cb, errCb, options) {
+      if (this._answer) return cb(this._answer)
       return this._callRemote(
         'createAnswer',
         `onSuccess, onFailure, ${JSON.stringify(options)}`,
-        cb, errCb
+        (offer) => {
+          this._answer = offer
+          cb(offer)
+        }, errCb
       )
     }
 
