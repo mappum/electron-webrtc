@@ -65,23 +65,15 @@ module.exports = function (daemon, wrtc) {
                 type: 'icecandidate',
                 event: event,
                 iceGatheringState: pc.iceGatheringState,
-                offer: offer ? offer.toJSON() : null,
-                answer: answer ? answer.toJSON() : null
+                offer: offer ? offer.toJSON() : null
               })
             }
             pc.createOffer(function (o) {
               offer = o
-              if (answer != null) sendEvent()
+              sendEvent()
             }, function () {
               offer = false
-              if (answer != null) sendEvent()
-            })
-            pc.createAnswer(function (a) {
-              answer = a
-              if (offer != null) sendEvent()
-            }, function () {
-              answer = false
-              if (offer != null) sendEvent()
+              sendEvent()
             })
           }
           pc.oniceconnectionstatechange = function (e) {
@@ -158,9 +150,6 @@ module.exports = function (daemon, wrtc) {
           this.iceGatheringState = message.iceGatheringState
           if (message.offer) {
             this._offer = Object.assign(this._offer || {}, message.offer)
-          }
-          if (message.answer) {
-            this._answer = Object.assign(this._answer || {}, message.answer)
           }
           break
 
