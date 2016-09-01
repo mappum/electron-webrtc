@@ -13,6 +13,9 @@ module.exports = function (daemon, wrtc) {
 
   return class RTCPeerConnection {
     constructor (opts) {
+      if (daemon.closing) {
+        throw new Error('Cannot create RTCPeerConnection, the electron-webrtc daemon has been closed')
+      }
       this._id = (i++).toString(36)
       this._dataChannels = new Map()
       this._offer = null
