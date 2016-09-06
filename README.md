@@ -75,9 +75,10 @@ Emitted by `RTCPeerConnection` or `RTCDataChannel` when `daemon.eval()` evaluate
 
 Chromium normally won't run on a headless server since it expects a screen that it can render to. So to work around this, we can use `Xvfb`, a utility that creates a framebuffer that Chromium can use as a virtual screen.
 
-First, install `xvfb`:
+First, install `Xvfb`:
 ```sh
-sudo apt-get install xvfb
+apt-get install xvfb # Ubuntu/Debian
+yum install xorg-x11-server-Xvfb # CentOS
 ```
 
 Create the `HEADLESS` env variable:
@@ -85,7 +86,7 @@ Create the `HEADLESS` env variable:
 export HEADLESS=true
 ```
 
-Or if you want to do it programmatically, initialize a new instance and pass in `headless` as a key as demonstrated: 
+Or if you want to do it programmatically, initialize a new instance and pass in `headless` as a key as demonstrated:
 ```js
 var wrtc = require('electron-webrtc')({ headless: true })
 ```
