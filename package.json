@@ -26,7 +26,7 @@
     "simple-peer": "^6.0.1",
     "standard": "^7.0.0",
     "string-to-stream": "^1.0.1",
-    "tap": "^5.1.1"
+    "tap": "^8.0.1"
   },
   "directories": {
     "test": "test"
