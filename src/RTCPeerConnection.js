@@ -205,7 +205,7 @@ module.exports = function (daemon, wrtc) {
 
     setLocalDescription (desc, cb, errCb) {
       this.localDescription = desc
-      this._callRemote(
+      return this._callRemote(
         'setLocalDescription',
         `new RTCSessionDescription(${JSON.stringify(desc)}), onSuccess, onFailure`,
         cb, errCb)
@@ -213,14 +213,14 @@ module.exports = function (daemon, wrtc) {
 
     setRemoteDescription (desc, cb, errCb) {
       this.remoteDescription = desc
-      this._callRemote(
+      return this._callRemote(
         'setRemoteDescription',
         `new RTCSessionDescription(${JSON.stringify(desc)}), onSuccess, onFailure`,
         cb, errCb)
     }
 
     addIceCandidate (candidate, cb, errCb) {
-      this._callRemote(
+      return this._callRemote(
         'addIceCandidate',
         `new RTCIceCandidate(${JSON.stringify(candidate)}), onSuccess, onFailure`,
         cb, errCb)
