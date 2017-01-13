@@ -151,6 +151,7 @@ module.exports = function (daemon, wrtc) {
           break
       }
 
+      this.emit(message.type, event)
       if (handler) handler(event)
     }
 
