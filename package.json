@@ -3,6 +3,7 @@
   "version": "0.2.12",
   "description": "Use WebRTC in Node.js via a hidden Electron process",
   "main": "index.js",
+  "browser": "browser.js",
   "scripts": {
     "test": "standard && tap test/*.js -t150 -Rspec --cov",
     "test-tap": "tap test/*.js -Rtap",
@@ -20,6 +21,7 @@
   "dependencies": {
     "debug": "^2.2.0",
     "electron-eval": "^0.9.0",
+    "get-browser-rtc": "^1.0.2",
     "hat": "^0.0.3"
   },
   "devDependencies": {
