@@ -1,5 +1,6 @@
 'use strict'
 
+var EventEmitter = require('events').EventEmitter
 var hat = require('hat')
 var debug = require('debug')('RTCPC')
 
@@ -11,8 +12,9 @@ module.exports = function (daemon, wrtc) {
     if (err) wrtc.emit('error', err)
   })
 
-  return class RTCPeerConnection {
+  return class RTCPeerConnection extends EventEmitter {
     constructor (opts) {
+      super()
       if (daemon.closing) {
         throw new Error('Cannot create RTCPeerConnection, the electron-webrtc daemon has been closed')
       }
@@ -170,6 +172,7 @@ module.exports = function (daemon, wrtc) {
           break
       }
 
+      this.emit(message.type, event)
       if (handler) handler(event)
     }
 
