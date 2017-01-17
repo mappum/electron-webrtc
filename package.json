@@ -1,6 +1,6 @@
 {
   "name": "electron-webrtc",
-  "version": "0.2.12",
+  "version": "0.3.0",
   "description": "Use WebRTC in Node.js via a hidden Electron process",
   "main": "index.js",
   "browser": "browser.js",
