@@ -179,33 +179,54 @@ module.exports = function (daemon, wrtc) {
       return dc
     }
 
-    createOffer (cb, errCb, options) {
-      if (this._offer) return cb(this._offer)
+    _getCreateArgs (p1, p2, p3) {
+      if (p1 && p2) { // old API
+        return {
+          cb: p1,
+          errCb: p2,
+          options: p3
+        }
+      } else { // new Promise API
+        return {
+          options: p1
+        }
+      }
+    }
+    createOffer (p1, p2, p3) {
+      let {cb, errCb, options} = this._getCreateArgs(p1, p2, p3)
+      if (this._offer) {
+        if (cb) cb(this._offer)
+        Promise.resolve(this._offer)
+      }
       return this._callRemote(
         'createOffer',
         `onSuccess, onFailure, ${JSON.stringify(options)}`,
         (offer) => {
           this._offer = offer
-          cb(offer)
+          if (cb) cb(offer)
         }, errCb
       )
     }
 
-    createAnswer (cb, errCb, options) {
-      if (this._answer) return cb(this._answer)
+    createAnswer (p1, p2, p3) {
+      let {cb, errCb, options} = this._getCreateArgs(p1, p2, p3)
+      if (this._answer) {
+        if (cb) cb(this._answer)
+        Promise.resolve(this._answer)
+      }
       return this._callRemote(
         'createAnswer',
         `onSuccess, onFailure, ${JSON.stringify(options)}`,
-        (offer) => {
-          this._answer = offer
-          cb(offer)
+        (answer) => {
+          this._answer = answer
+          if (cb) cb(answer)
         }, errCb
       )
     }
 
     setLocalDescription (desc, cb, errCb) {
       this.localDescription = desc
-      this._callRemote(
+      return this._callRemote(
         'setLocalDescription',
         `new RTCSessionDescription(${JSON.stringify(desc)}), onSuccess, onFailure`,
         cb, errCb)
@@ -213,14 +234,14 @@ module.exports = function (daemon, wrtc) {
 
     setRemoteDescription (desc, cb, errCb) {
       this.remoteDescription = desc
-      this._callRemote(
+      return this._callRemote(
         'setRemoteDescription',
         `new RTCSessionDescription(${JSON.stringify(desc)}), onSuccess, onFailure`,
         cb, errCb)
     }
 
     addIceCandidate (candidate, cb, errCb) {
-      this._callRemote(
+      return this._callRemote(
         'addIceCandidate',
         `new RTCIceCandidate(${JSON.stringify(candidate)}), onSuccess, onFailure`,
         cb, errCb)
@@ -270,11 +291,11 @@ module.exports = function (daemon, wrtc) {
       })
       var reqId = hat()
       daemon.once(reqId, (res) => {
-        if (res.err && errCb) {
-          errCb(res.err)
+        if (res.err) {
+          if (errCb) errCb(res.err)
           _reject(res.err)
-        } else if (!res.err && cb) {
-          cb(res.res)
+        } else {
+          if (cb) cb(res.res)
           _resolve(res.res)
         }
       })
