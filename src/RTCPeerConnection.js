@@ -180,20 +180,23 @@ module.exports = function (daemon, wrtc) {
     }
 
     _getCreateArgs (p1, p2, p3) {
-      if (p1 && p2) return { // old API
+      if (p1 && p2) { // old API
+        return {
           cb: p1,
           errCb: p2,
           options: p3
-        };
-      else return { // new Promise API
+        }
+      } else { // new Promise API
+        return {
           options: p1
         }
+      }
     }
     createOffer (p1, p2, p3) {
-      let {cb, errCb, options} = this._getCreateArgs(p1, p2, p3);
+      let {cb, errCb, options} = this._getCreateArgs(p1, p2, p3)
       if (this._offer) {
-        if(cb) cb(this._offer)
-        Promise.resolve(this._offer);
+        if (cb) cb(this._offer)
+        Promise.resolve(this._offer)
       }
       return this._callRemote(
         'createOffer',
@@ -206,7 +209,7 @@ module.exports = function (daemon, wrtc) {
     }
 
     createAnswer (p1, p2, p3) {
-      let {cb, errCb, options} = this._getCreateArgs(p1, p2, p3);
+      let {cb, errCb, options} = this._getCreateArgs(p1, p2, p3)
       if (this._answer) {
         if (cb) cb(this._answer)
         Promise.resolve(this._answer)
