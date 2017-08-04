@@ -80,6 +80,11 @@ First, install `Xvfb`:
 apt-get install xvfb # Ubuntu/Debian
 yum install xorg-x11-server-Xvfb # CentOS
 ```
+> **Note**: On Ubuntu 17.04 Zesty, you also need the following:
+> ```sh
+> apt install libxtst6 libxss1 libgtk2.0 libgconf2-4 libnss3 libasound2
+> ```
+
 
 Create the `HEADLESS` env variable:
 ```sh
