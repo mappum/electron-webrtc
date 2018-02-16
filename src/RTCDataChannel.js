@@ -77,6 +77,7 @@ module.exports = function (daemon, wrtc) {
       }
       this.stream = this.id
       this._registerListeners()
+      this.on('error', (err) => wrtc.emit('error', err, this))
     }
 
     _registerListeners (cb) {
