@@ -11,6 +11,6 @@ module.exports = function (opts) {
     RTCPeerConnection: require('./src/RTCPeerConnection.js')(daemon, wrtc),
     RTCSessionDescription: require('./src/RTCSessionDescription.js'),
     RTCIceCandidate: require('./src/RTCIceCandidate.js'),
-    RTCDataChannel: require('./src/RTCDataChannel.js')
+    RTCDataChannel: require('./src/RTCDataChannel.js')(daemon, wrtc)
   })
 }
